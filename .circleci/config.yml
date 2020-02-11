@@ -1,0 +1,29 @@
+version: 2.1
+
+orbs:
+  secrethub:
+    commands:
+      install:
+        steps:
+          - run:
+              command: curl -sSfL https://github.com/secrethub/secrethub-cli/releases/download/v$VERSION/secrethub-v$VERSION-linux-arm64.tar.gz | tar zxf - -C /usr/bin
+              environment:
+                VERSION: 0.34.0
+    jobs:
+      run:
+        parameters:
+          command:
+            type: steps
+            default: []
+        steps:
+          - install
+          - run: secrethub --version
+
+workflows:
+  main:
+    jobs:
+      - secrethub/run:
+          no-masking: false
+          command:
+            - run: echo hello
+            - run: env
