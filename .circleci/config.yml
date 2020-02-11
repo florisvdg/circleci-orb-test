@@ -11,6 +11,7 @@ orbs:
         steps:
           - run:
               command: curl -sSfL https://github.com/secrethub/secrethub-cli/releases/download/v$VERSION/secrethub-v$VERSION-linux-amd64.tar.gz | tar zxf - -C $HOME
+              shell: /bin/sh
               environment:
                 VERSION: 0.34.0
     jobs:
@@ -20,9 +21,11 @@ orbs:
           command:
             type: steps
             default: []
+        shell: secrethub run -- /bin/sh
         steps:
           - install
           - run: secrethub --version
+          - steps: << parameters.command >>
 
 workflows:
   main:
