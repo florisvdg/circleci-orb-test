@@ -32,5 +32,6 @@ workflows:
     jobs:
       - secrethub/run:
           command:
+            - checkout
             - run: echo hello
             - run: env
