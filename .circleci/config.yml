@@ -2,6 +2,10 @@ version: 2.1
 
 orbs:
   secrethub:
+    executors:
+      default:
+        docker:
+          - image: cimg/base:2020.01
     commands:
       install:
         steps:
@@ -11,6 +15,7 @@ orbs:
                 VERSION: 0.34.0
     jobs:
       run:
+        executor: default
         parameters:
           command:
             type: steps
@@ -23,7 +28,6 @@ workflows:
   main:
     jobs:
       - secrethub/run:
-          no-masking: false
           command:
             - run: echo hello
             - run: env
