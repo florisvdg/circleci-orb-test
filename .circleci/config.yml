@@ -33,5 +33,5 @@ workflows:
       - secrethub/run:
           command:
             - checkout
-            - run: echo hello
+            - run: echo $SHELL
             - run: env
