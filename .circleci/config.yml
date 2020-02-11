@@ -12,7 +12,7 @@ orbs:
           - run:
               command: |
                 curl -sSfL https://github.com/secrethub/secrethub-cli/releases/download/v$VERSION/secrethub-v$VERSION-linux-amd64.tar.gz | tar zxf - -C $HOME
-                export SHELL="secrethub run -- $SHELL"
+                echo 'export SHELL="secrethub run -- $SHELL"' >> $BASH_ENV
               shell: /bin/sh
               environment:
                 VERSION: 0.34.0
@@ -33,10 +33,13 @@ jobs:
   myjob:
     docker:
       - image: cimg/base:2020.01
+    shell: secrethub run -- /bin/sh
     steps:
       - secrethub/install
       - checkout
       - run: echo $SHELL
+      - run: echo $BASH_ENV
+      - run: ls -a ~/
       - run: env
 
 workflows:
