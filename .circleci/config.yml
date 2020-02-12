@@ -1,6 +1,7 @@
 version: 2.1
 
 orbs:
+  aws-cli: circleci/aws-cli@0.1.20
   secrethub:
     executors:
       default:
@@ -34,16 +35,16 @@ orbs:
 
 jobs:
   myjob:
-    docker:
-      - image: cimg/base:2020.01
-    shell: secrethub run -- /bin/sh
+    executor: aws-cli/default
+    shell: secrethub run -- /bin/bash
+    environment:
+      AWS_DEFAULT_REGION: eu-west-1
     steps:
       - secrethub/install
       - checkout
       - run: echo $SHELL
-      - run: echo $BASH_ENV
-      - run: ls -a ~/
       - run: env
+      - aws-cli/setup
 
 workflows:
   main:
