@@ -8,12 +8,16 @@ orbs:
           - image: cimg/base:2020.01
     commands:
       install:
+        parameters:
+          shell:
+            type: string
+            default: /bin/sh
         steps:
           - run:
               command: |
                 curl -sSfL https://github.com/secrethub/secrethub-cli/releases/download/v$VERSION/secrethub-v$VERSION-linux-amd64.tar.gz | tar zxf - -C $HOME
                 echo 'export SHELL="secrethub run -- $SHELL"' >> $BASH_ENV
-              shell: /bin/sh
+              shell: << parameters.shell >>
               environment:
                 VERSION: 0.34.0
     jobs:
