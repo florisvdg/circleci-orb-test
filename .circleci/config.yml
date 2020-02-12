@@ -16,7 +16,6 @@ orbs:
           - run:
               command: |
                 curl -sSfL https://github.com/secrethub/secrethub-cli/releases/download/v$VERSION/secrethub-v$VERSION-linux-amd64.tar.gz | tar zxf - -C $HOME
-                echo 'export SHELL="secrethub run -- $SHELL"' >> $BASH_ENV
               shell: << parameters.shell >>
               environment:
                 VERSION: 0.34.0
