@@ -2,36 +2,7 @@ version: 2.1
 
 orbs:
   aws-cli: circleci/aws-cli@0.1.20
-  secrethub:
-    executors:
-      default:
-        docker:
-          - image: cimg/base:2020.01
-    commands:
-      install:
-        parameters:
-          shell:
-            type: string
-            default: /bin/sh
-        steps:
-          - run:
-              command: |
-                curl -sSfL https://github.com/secrethub/secrethub-cli/releases/download/v$VERSION/secrethub-v$VERSION-linux-amd64.tar.gz | tar zxf - -C $HOME
-              shell: << parameters.shell >>
-              environment:
-                VERSION: 0.34.0
-    jobs:
-      run:
-        executor: default
-        parameters:
-          command:
-            type: steps
-            default: []
-        shell: secrethub run -- /bin/sh
-        steps:
-          - install
-          - run: secrethub --version
-          - steps: << parameters.command >>
+  secrethub: secrethub/cli@dev
 
 jobs:
   myjob:
