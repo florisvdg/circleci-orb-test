@@ -6,18 +6,15 @@ jobs:
   deploy:
     docker:
       - image: cimg/base:stable
+    environment:
+      AWS_ACCESS_KEY_ID: secrethub://florisvdg/demo/aws/access_key_id
+      AWS_SECRET_ACCESS_KEY: secrethub://florisvdg/demo/aws/secret_access_key
     steps:
-      - secrethub/install
       - checkout
-      - run:
-          shell: secrethub run -- /bin/bash
-          environment:
-            AWS_ACCESS_KEY_ID: secrethub://florisvdg/demo/aws/access_key_id
-            AWS_SECRET_ACCESS_KEY: secrethub://florisvdg/demo/aws/secret_access_key
+      - secrethub/exec:
           command: |
             echo "This value will be masked: $AWS_ACCESS_KEY_ID"
             echo "This value will be masked: $AWS_SECRET_ACCESS_KEY"
-            ./deploy-my-app.sh
 workflows:
   deploy:
     jobs:
