@@ -1,22 +1,23 @@
 version: 2.1
-
 orbs:
-  aws-cli: circleci/aws-cli@0.1.20
   secrethub: secrethub/cli@dev:1f31e46
 
 jobs:
   deploy:
-    executor: aws-cli/default
-    shell: secrethub run -- /bin/bash
-    environment:
-      AWS_DEFAULT_REGION: us-east-1
-      AWS_ACCESS_KEY_ID: secrethub://florisvdg/demo/aws/access_key_id
-      AWS_SECRET_ACCESS_KEY: secrethub://florisvdg/demo/aws/secret_access_key
+    docker:
+      - image: cimg/base:stable
     steps:
       - secrethub/install
       - checkout
-      - aws-cli/setup
-
+      - run:
+          shell: secrethub run -- /bin/bash
+          environment:
+            AWS_ACCESS_KEY_ID: secrethub://florisvdg/demo/aws/access_key_id
+            AWS_SECRET_ACCESS_KEY: secrethub://florisvdg/demo/aws/secret_access_key
+          command: |
+            echo "This value will be masked: $AWS_ACCESS_KEY_ID"
+            echo "This value will be masked: $AWS_SECRET_ACCESS_KEY"
+            ./deploy-my-app.sh
 workflows:
   deploy:
     jobs:
