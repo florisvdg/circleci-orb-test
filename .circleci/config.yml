@@ -1,5 +1,6 @@
 version: 2.1
 orbs:
+  docker: circleci/docker@1.0.0
   secrethub: secrethub/cli@dev:1f31e46
 
 jobs:
@@ -9,17 +10,19 @@ jobs:
     environment:
       DOCKER_USERNAME: secrethub://florisvdg/demo/docker/username
       DOCKER_PASSWORD: secrethub://florisvdg/demo/docker/password
+    shell: secrethub run -- /bin/bash
     steps:
+      - secrethub/install
       - checkout
       - setup_remote_docker
-      - run:
-          name: Build Docker image
-          command: docker build -t florisvdg/hello-world:${CIRCLE_SHA1:0:7} .
-      - secrethub/exec:
-          command-name: Publish Docker image
-          command: |
-            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-            docker push florisvdg/hello-world:${CIRCLE_SHA1:0:7}
+      - docker/build:
+          step-name: Build Docker image
+          image: florisvdg/hello-world
+          tag: ${CIRCLE_SHA1:0:7}
+      - docker/push:
+          step-name: Publish Docker image
+          image: florisvdg/hello-world
+          tag: ${CIRCLE_SHA1:0:7}
 workflows:
   deploy:
     jobs:
