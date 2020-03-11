@@ -1,21 +1,21 @@
 version: 2.1
-orbs:
-  secrethub: secrethub/cli@dev:1f31e46
 
 jobs:
-  deploy:
+  publish:
     docker:
-      - image: cimg/base:stable
-    environment:
-      AWS_ACCESS_KEY_ID: secrethub://florisvdg/demo/aws/access_key_id
-      AWS_SECRET_ACCESS_KEY: secrethub://florisvdg/demo/aws/secret_access_key
+      - image: circleci/buildpack-deps:stretch
     steps:
       - checkout
-      - secrethub/exec:
+      - setup_remote_docker
+      - run:
+          name: Build Docker image
+          command: docker build -t florisvdg/hello-world:${CIRCLE_SHA1:0:7} .
+      - run:
+          name: Publish Docker image
           command: |
-            echo "This value will be masked: $AWS_ACCESS_KEY_ID"
-            echo "This value will be masked: $AWS_SECRET_ACCESS_KEY"
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            docker push florisvdg/hello-world:${CIRCLE_SHA1:0:7}
 workflows:
   deploy:
     jobs:
-      - deploy
+      - publish
