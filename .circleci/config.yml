@@ -1,29 +1,31 @@
 version: 2.1
-orbs:
-  docker: circleci/docker@1.0.0
-  secrethub: secrethub/cli@dev:1f31e46
+
+environment:
+  TEST_SECRET_1: test_secret_1
+
+commands:
+  load-secrets:
+    steps:
+      - run: 
+          environment:
+            TEST_SECRET_2: test_secret_2
+            TEST_SECRET_3: test_secret_3
+          command: |
+            echo "export TEST_SECRET_1=$TEST_SECRET_1" >> $BASH_ENV
+            echo "export TEST_SECRET_2=$TEST_SECRET_2" >> $BASH_ENV
+            echo "export TEST_SECRET_3=$TEST_SECRET_3" >> $BASH_ENV
 
 jobs:
-  publish:
+  print-env:
     docker:
-      - image: circleci/buildpack-deps:stretch
-    environment:
-      DOCKER_USERNAME: secrethub://florisvdg/demo/docker/username
-      DOCKER_PASSWORD: secrethub://florisvdg/demo/docker/password
-    shell: secrethub run -- /bin/bash
+      - image: cimg/base:stable
     steps:
-      - secrethub/install
-      - checkout
-      - setup_remote_docker
-      - docker/build:
-          step-name: Build Docker image
-          image: florisvdg/hello-world
-          tag: ${CIRCLE_SHA1:0:7}
-      - docker/push:
-          step-name: Publish Docker image
-          image: florisvdg/hello-world
-          tag: ${CIRCLE_SHA1:0:7}
+      - run: cat $BASH_ENV
+      - run: printenv
+
 workflows:
-  deploy:
+  test:
     jobs:
-      - publish
+      - print-env:
+          pre-steps:
+            - load-secrets
