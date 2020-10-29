@@ -7,25 +7,21 @@ commands:
   load-secrets:
     steps:
       - run: 
-          environment:
-            TEST_SECRET_2: test_secret_2
-            TEST_SECRET_3: test_secret_3
           command: |
-            echo "export TEST_SECRET_1=$TEST_SECRET_1" >> $BASH_ENV
-            echo "export TEST_SECRET_2=$TEST_SECRET_2" >> $BASH_ENV
-            echo "export TEST_SECRET_3=$TEST_SECRET_3" >> $BASH_ENV
+            mkdir -p /tmp/parameterstore
+            echo "export TEST_SECRET_1=test_secret_1" >> /tmp/parameterstore/PARAMETERSTORESOURCEFILE
+            source /tmp/parameterstore/PARAMETERSTORESOURCEFILE
+            printenv
 
 jobs:
   print-env:
     docker:
       - image: cimg/base:stable
     steps:
-      - run: cat $BASH_ENV
+      - load-secrets
       - run: printenv
 
 workflows:
   test:
     jobs:
-      - print-env:
-          pre-steps:
-            - load-secrets
+      - print-env
